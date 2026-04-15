@@ -1,47 +1,53 @@
-# My Todo Item Card - HNG 14 Task
+# My Advanced Todo Card (Stage 1a)
 
-Hey! 👋 This is my Todo Item Card application that I built for the HNG 14 bootcamp. I wanted to create a responsive, highly functional task management card that looks great and is perfectly set up for testing.
+Hey! 👋 This is the **Stage 1a** version of my Todo Item Card project for the HNG 14 internship. I've taken my baseline Stage 0 component and transformed it into a fully interactive and stateful experience by adding several "app-like" features using vanilla HTML, CSS, and JS.
 
-## What I built
+## 🚀 Key Changes: From Stage 0 to Stage 1a
 
-I put together this card using just semantic HTML, CSS, and some vanilla JavaScript. Here are some of the main things I focused on:
+The jump from Stage 0 to Stage 1a was all about moving from a static "display" card to a dynamic "interactive" card. Here are the specific upgrades I implemented:
 
-- **Semantic HTML**: I made sure the HTML is fully accessible, using optimized DOM structures and functional ARIA labels.
-- **Testing Ready**: Every functional element is mapped with explicit `data-testid` tags so automated grading tests (like Cypress or Playwright) can easily find and interact with them.
-- **Dynamic CSS**: The layout is built with Flexbox configurations so it smoothly transitions and comfortably snaps into any viewport scale.
-- **Inline Editing**: I added features that allow you to dynamically modify task descriptions, toggle checkmarks, and swap drop-down statuses beautifully.
-- **Action Buttons**: It comes with a complete UI setup for "Edit" and "Delete" actions using crisp SVG icons.
+### 1. Fully Functional Editing Mode
+*   **What was in Stage 0**: Just an "Edit" button that didn't do anything (or just alerted/logged).
+*   **What's in Stage 1a**: Clicking "Edit" now toggles an inline **Edit Form** (`data-testid="test-todo-edit-form"`). You can live-edit the Title, Description, Priority, and Due Date. I also added **Save** and **Cancel** buttons to commit or discard those changes.
 
-## Decisions I Made
+### 2. Advanced Status & Synchronization
+*   **What was in Stage 0**: A simple checkbox and a "Pending/Done" label.
+*   **What's in Stage 1a**: I added a **Status Dropdown** (`test-todo-status-control`) with three states: *Pending*, *In Progress*, and *Done*. I also wrote custom JS to keep the checkbox and dropdown perfectly in sync—toggling one updates the other instantly.
 
-While building this, I made a few key technical decisions to keep things efficient:
+### 3. Smart "Time Management" Engine
+*   **What was in Stage 0**: Hardcoded due date and a basic "Due in X days" string.
+*   **What's in Stage 1a**:
+    *   **Granular Strings**: The timer now calculates specific relative time (e.g., "Due in 3 hours" or "Overdue by 1 day").
+    *   **Live Updates**: The timer refreshes every 30 seconds automatically.
+    *   **Overdue Indicator**: A dedicated visual badge (`data-testid="test-todo-overdue-indicator"`) pops up and turns the text red if the task passes its deadline.
+    *   **Completed State**: Once a task is "Done," the timer stops and displays a clean "Completed" message.
 
-- **Vanilla Technology Stack**: I chose HTML5, CSS3, and regular JavaScript without any frameworks. This keeps the project lightweight and blazing fast.
-- **Light Blue Aesthetic**: I went with a modern design using clean, flat colors and smooth corners to create a premium feel.
-- **Accessibility & Testing Best Practices**: I used `data-testid` attributes on crucial elements so automated frameworks can hook into the UI effortlessly.
-- **Time Remaining Calculation**: I used a `setInterval` loop to check the due date every minute and update the timer live.
+### 4. Collapsible Context
+*   **What was in Stage 0**: The description was always visible, regardless of length.
+*   **What's in Stage 1a**: I added a **Collapsible Container** (`test-todo-collapsible-section`). If the description is long, it auto-collapses and shows a "Show more" button (`test-todo-expand-toggle`) to keep the layout tidy.
 
-## Trade-offs
+### 5. Visual Hierarchy & Priority
+*   **What was in Stage 0**: Just a priority text label.
+*   **What's in Stage 1a**: Added a **Priority Indicator Dot** (`test-todo-priority-indicator`) that changes color (Green/Amber/Red) to give instant visual feedback on task urgency. I also added the "is-done" styling, which strikes through the title and mutes the card's colors.
 
-Since this was a focused task, I had to make some trade-offs:
+## 🎨 Design Decisions
 
-- **Vanilla JS vs State Management**: By using Vanilla JS, the code is simple but state management is tightly coupled with the DOM. For a much larger app, I'd definitely reach for a framework like React.
-- **Data Persistence**: Todos aren't currently saved to `localStorage` or a database. I focused purely on the frontend UI and card state for this requirement.
-- **CSS Simplicity**: I traded complex CSS variables for simpler, explicit styles to make the code as readable and easy to maintain as possible for other developers.
+*   **Modern Aesthetics**: I stuck with a "Glassmorphism" light feel and the **Outfit** Google Font to give it a premium, modern look.
+*   **Micro-interactions**: I added subtle transitions for cards when they are marked as done or deleted to make the app feel "alive."
+*   **Responsive Flow**: I redesigned the layout to handle mobile stacking, ensuring the edit form and tags wrap perfectly on small screens (down to 320px).
 
-## How to run my code locally
+## ♿ Accessibility Notes
 
-It's super simple to review my work since I built it natively without any node modules, framework compilers, or package managers!
+Accessibility was a high priority for 1a:
+*   **ARIA Labels**: All icon-only buttons have clear `aria-label` tags.
+*   **Aria-Live**: The timer uses `aria-live="polite"` so screen readers can announce time updates without being intrusive.
+*   **Focus Management**: Focus is intelligently trapped during editing and returned to the edit button once you're done.
+*   **Keyboard Ready**: Every single interactive element is reachable and usable via the Tab key.
 
-**The easiest way:**
-1. Just download or clone this repository to your computer.
-2. Open the `todo-item-card` folder.
-3. Double-click the `index.html` file and it will open right up in your default web browser!
+## ⚠️ Known Limitations
 
-**If you use VS Code:**
-1. Open the project folder in VS Code.
-2. Make sure you have the "Live Server" extension installed.
-3. Right-click on `index.html` and hit **"Open with Live Server"**. It'll open up in your browser and update live if you want to play around with the code!
+*   **No Long-term Persistence**: Since this is a vanilla frontend task, there’s no backend or `localStorage`. Refreshing the page will reset the tasks to their default values.
+*   **Static Tags**: The category tags (Work/Urgent) are currently static displays for this stage.
 
 ---
-*Built with ❤️ by Favour Damain*
+*Built with ❤️ by Favour Damian*
