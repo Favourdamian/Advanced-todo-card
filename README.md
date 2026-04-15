@@ -12,6 +12,23 @@ I put together this card using just semantic HTML, CSS, and some vanilla JavaScr
 - **Inline Editing**: I added features that allow you to dynamically modify task descriptions, toggle checkmarks, and swap drop-down statuses beautifully.
 - **Action Buttons**: It comes with a complete UI setup for "Edit" and "Delete" actions using crisp SVG icons.
 
+## Decisions I Made
+
+While building this, I made a few key technical decisions to keep things efficient:
+
+- **Vanilla Technology Stack**: I chose HTML5, CSS3, and regular JavaScript without any frameworks. This keeps the project lightweight and blazing fast.
+- **Light Blue Aesthetic**: I went with a modern design using clean, flat colors and smooth corners to create a premium feel.
+- **Accessibility & Testing Best Practices**: I used `data-testid` attributes on crucial elements so automated frameworks can hook into the UI effortlessly.
+- **Time Remaining Calculation**: I used a `setInterval` loop to check the due date every minute and update the timer live.
+
+## Trade-offs
+
+Since this was a focused task, I had to make some trade-offs:
+
+- **Vanilla JS vs State Management**: By using Vanilla JS, the code is simple but state management is tightly coupled with the DOM. For a much larger app, I'd definitely reach for a framework like React.
+- **Data Persistence**: Todos aren't currently saved to `localStorage` or a database. I focused purely on the frontend UI and card state for this requirement.
+- **CSS Simplicity**: I traded complex CSS variables for simpler, explicit styles to make the code as readable and easy to maintain as possible for other developers.
+
 ## How to run my code locally
 
 It's super simple to review my work since I built it natively without any node modules, framework compilers, or package managers!

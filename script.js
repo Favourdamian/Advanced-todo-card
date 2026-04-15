@@ -9,14 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupCard(card) {
         const completeToggle = card.querySelector('[data-testid="test-todo-complete-toggle"]');
         const statusLabel = card.querySelector('[data-testid="test-todo-status"]');
+        const statusControl = card.querySelector('[data-testid="test-todo-status-control"]');
         const timeRemaining = card.querySelector('[data-testid="test-todo-time-remaining"]');
         const editBtn = card.querySelector('[data-testid="test-todo-edit-button"]');
         const deleteBtn = card.querySelector('[data-testid="test-todo-delete-button"]');
         const dueDateElement = card.querySelector('[data-testid="test-todo-due-date"]');
+        
+        const priorityBadge = card.querySelector('[data-testid="test-todo-priority"]');
+        const priorityText = priorityBadge ? priorityBadge.querySelector('.priority-text') : null;
+        
+        const titleElement = card.querySelector('[data-testid="test-todo-title"]');
+        const descElement = card.querySelector('[data-testid="test-todo-description"]');
+        const collapsibleSection = card.querySelector('[data-testid="test-todo-collapsible-section"]');
+        const expandToggle = card.querySelector('[data-testid="test-todo-expand-toggle"]');
+        const overdueIndicator = card.querySelector('[data-testid="test-todo-overdue-indicator"]');
+        
+        const editForm = card.querySelector('[data-testid="test-todo-edit-form"]');
+        const editTitleInput = card.querySelector('[data-testid="test-todo-edit-title-input"]');
+        const editDescInput = card.querySelector('[data-testid="test-todo-edit-description-input"]');
+        const editPrioritySelect = card.querySelector('[data-testid="test-todo-edit-priority-select"]');
+        const editDateInput = card.querySelector('[data-testid="test-todo-edit-due-date-input"]');
+        const cancelBtn = card.querySelector('[data-testid="test-todo-cancel-button"]');
 
-        const DUE_DATE = new Date(dueDateElement.getAttribute('datetime'));
+        let DUE_DATE = new Date(dueDateElement.getAttribute('datetime'));
+        let timeInterval;
 
         function updateTimeRemaining() {
+            if ((statusControl && statusControl.value === "Done") || (completeToggle && completeToggle.checked)) {
+                timeRemaining.textContent = "Completed";
+                timeRemaining.classList.remove('is-overdue');
+                if (overdueIndicator) overdueIndicator.hidden = true;
+                return;
+            }
+
             const now = new Date();
             const diff = DUE_DATE - now;
             
@@ -35,10 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 timeRemaining.classList.add('is-overdue');
+                if (overdueIndicator) overdueIndicator.hidden = false;
                 return;
             }
 
             timeRemaining.classList.remove('is-overdue');
+            if (overdueIndicator) overdueIndicator.hidden = true;
+            
             const seconds = Math.floor(diff / 1000);
             const minutes = Math.floor(seconds / 60);
             const hours = Math.floor(minutes / 60);
@@ -57,36 +85,126 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        completeToggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
+        function setStatus(status) {
+            if (!statusControl || !completeToggle) return;
+            statusControl.value = status;
+            if (status === "Done") {
                 card.classList.add('is-done');
-                statusLabel.textContent = "Done";
+                completeToggle.checked = true;
             } else {
                 card.classList.remove('is-done');
-                statusLabel.textContent = "In Progress";
+                completeToggle.checked = false;
             }
-        });
+            updateTimeRemaining();
+        }
 
-        editBtn.addEventListener('click', () => {
-            const currentTitle = card.querySelector('.todo-title').textContent;
-            const newTitle = prompt("Edit task title:", currentTitle);
-            if (newTitle) {
-                card.querySelector('.todo-title').textContent = newTitle;
+        if (completeToggle) {
+            completeToggle.addEventListener('change', (e) => {
+                setStatus(e.target.checked ? "Done" : "Pending");
+            });
+        }
+
+        if (statusControl) {
+            statusControl.addEventListener('change', (e) => {
+                setStatus(e.target.value);
+            });
+        }
+
+        if (editBtn) {
+            editBtn.addEventListener('click', () => {
+                card.classList.add('is-editing');
+                if (editForm) editForm.hidden = false;
+                editTitleInput.value = titleElement.textContent.trim();
+                editDescInput.value = descElement.textContent.trim();
+                
+                let currentPriority = "Medium";
+                if (priorityBadge.classList.contains('priority-high')) currentPriority = "High";
+                if (priorityBadge.classList.contains('priority-low')) currentPriority = "Low";
+                editPrioritySelect.value = currentPriority;
+                
+                const localIso = new Date(DUE_DATE.getTime() - DUE_DATE.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+                editDateInput.value = localIso;
+                
+                editTitleInput.focus();
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                card.classList.remove('is-editing');
+                if (editForm) editForm.hidden = true;
+                editBtn.focus();
+            });
+        }
+
+        if (editForm) {
+            editForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                titleElement.textContent = editTitleInput.value.trim();
+                descElement.textContent = editDescInput.value.trim();
+                
+                if (priorityBadge) {
+                    priorityBadge.classList.remove('priority-low', 'priority-medium', 'priority-high');
+                    priorityBadge.classList.add(`priority-${editPrioritySelect.value.toLowerCase()}`);
+                    if (priorityText) priorityText.textContent = editPrioritySelect.value;
+                }
+                
+                DUE_DATE = new Date(editDateInput.value);
+                dueDateElement.setAttribute('datetime', DUE_DATE.toISOString());
+                dueDateElement.textContent = `Due ${DUE_DATE.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+                
+                card.classList.remove('is-editing');
+                if (editForm) editForm.hidden = true;
+                checkDescriptionLength();
+                updateTimeRemaining();
+                editBtn.focus();
+            });
+        }
+
+        function checkDescriptionLength() {
+            if (!descElement || !collapsibleSection || !expandToggle) return;
+            if (descElement.textContent.trim().length > 100) {
+                collapsibleSection.classList.add('collapsed');
+                expandToggle.hidden = false;
+                expandToggle.textContent = "Show more";
+                expandToggle.setAttribute('aria-expanded', 'false');
+            } else {
+                collapsibleSection.classList.remove('collapsed');
+                expandToggle.hidden = true;
             }
-        });
+        }
 
-        deleteBtn.addEventListener('click', () => {
-            const confirmed = confirm("Are you sure you want to delete this task?");
-            if (confirmed) {
-                card.classList.add('is-deleting');
-                setTimeout(() => {
-                    card.remove();
-                }, 300);
-            }
-        });
+        if (expandToggle) {
+            expandToggle.addEventListener('click', () => {
+                const isExpanded = expandToggle.getAttribute('aria-expanded') === 'true';
+                if (isExpanded) {
+                    collapsibleSection.classList.add('collapsed');
+                    expandToggle.setAttribute('aria-expanded', 'false');
+                    expandToggle.textContent = "Show more";
+                } else {
+                    collapsibleSection.classList.remove('collapsed');
+                    expandToggle.setAttribute('aria-expanded', 'true');
+                    expandToggle.textContent = "Show less";
+                }
+            });
+        }
 
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => {
+                const confirmed = confirm("Are you sure you want to delete this task?");
+                if (confirmed) {
+                    card.classList.add('is-deleting');
+                    clearInterval(timeInterval);
+                    setTimeout(() => {
+                        card.remove();
+                    }, 300);
+                }
+            });
+        }
+
+        checkDescriptionLength();
         updateTimeRemaining();
-        setInterval(updateTimeRemaining, 60000);
+        timeInterval = setInterval(updateTimeRemaining, 30000);
     }
 
     // --- Initialize existing cards ---
@@ -119,19 +237,52 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset values
         newCard.querySelector('[data-testid="test-todo-title"]').textContent = title;
         newCard.querySelector('[data-testid="test-todo-complete-toggle"]').checked = false;
-        newCard.querySelector('[data-testid="test-todo-status"]').textContent = "In Progress";
-        newCard.querySelector('[data-testid="test-todo-description"]').textContent = description || "No description provided.";
+        
+        const newStatusControl = newCard.querySelector('[data-testid="test-todo-status-control"]');
+        if (newStatusControl) newStatusControl.value = "In Progress";
+        
+        const newDesc = newCard.querySelector('[data-testid="test-todo-description"]');
+        if (newDesc) newDesc.textContent = description || "No description provided.";
+        
+        const newPriority = newCard.querySelector('[data-testid="test-todo-priority"]');
+        if (newPriority) {
+            newPriority.classList.remove('priority-low', 'priority-medium', 'priority-high');
+            newPriority.classList.add('priority-medium');
+            const newPriText = newPriority.querySelector('.priority-text');
+            if (newPriText) newPriText.textContent = "Medium";
+        }
         
         const timeElement = newCard.querySelector('.todo-due-date');
         timeElement.setAttribute('datetime', dueDate.toISOString());
         timeElement.textContent = `Due ${dueDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
         
-        // Ensure unique IDs for checkbox and labels
+        // Ensure unique IDs for checkbox, labels, edit forms, and collapsibles
         const uniqueId = 'todo-' + Date.now();
+        
         const checkbox = newCard.querySelector('.todo-checkbox');
         const label = newCard.querySelector('.todo-label');
-        checkbox.id = uniqueId;
-        label.setAttribute('for', uniqueId);
+        checkbox.id = 'check-' + uniqueId;
+        label.setAttribute('for', 'check-' + uniqueId);
+
+        const editFields = ['edit-title', 'edit-description', 'edit-priority', 'edit-due-date'];
+        editFields.forEach(idPrefix => {
+            // Need to select by class or data-testid, otherwise selecting by id on clone gets the old id
+            const el = newCard.querySelector(`[id^="${idPrefix}"]`);
+            const lbl = newCard.querySelector(`label[for^="${idPrefix}"]`);
+            if (el && lbl) {
+                const newId = `${idPrefix}-${uniqueId}`;
+                el.id = newId;
+                lbl.setAttribute('for', newId);
+            }
+        });
+
+        const collapsible = newCard.querySelector('.todo-collapsible');
+        const expandBtn = newCard.querySelector('.expand-toggle');
+        if (collapsible && expandBtn) {
+            const colId = `desc-${uniqueId}`;
+            collapsible.id = colId;
+            expandBtn.setAttribute('aria-controls', colId);
+        }
 
         todoList.appendChild(newCard);
         setupCard(newCard);
