@@ -1,26 +1,30 @@
-# Frontend Task Manager (Todo Item Card)
+# My Todo Item Card - HNG 14 Task
 
-A testable, responsive Todo Item Card application designed with a premium light-blue aesthetic.
+Hey! 👋 This is my Todo Item Card application that I built for the HNG 14 bootcamp. I wanted to create a responsive, highly functional task management card that looks great and is perfectly set up for testing.
 
-## How to Run Locally
+## What I built
 
-Since this is a vanilla HTML/CSS/JS application with no build steps, running it locally is incredibly simple:
+I put together this card using just semantic HTML, CSS, and some vanilla JavaScript. Here are some of the main things I focused on:
 
-1. Clone the repository or download the files.
-2. Open `index.html` directly in your web browser (Chrome, Firefox, Safari, Edge).
-3. Alternatively, you can use a local server like VS Code's "Live Server" extension for a better development experience (hot-reloading).
+- **Semantic HTML**: I made sure the HTML is fully accessible, using optimized DOM structures and functional ARIA labels.
+- **Testing Ready**: Every functional element is mapped with explicit `data-testid` tags so automated grading tests (like Cypress or Playwright) can easily find and interact with them.
+- **Dynamic CSS**: The layout is built with Flexbox configurations so it smoothly transitions and comfortably snaps into any viewport scale.
+- **Inline Editing**: I added features that allow you to dynamically modify task descriptions, toggle checkmarks, and swap drop-down statuses beautifully.
+- **Action Buttons**: It comes with a complete UI setup for "Edit" and "Delete" actions using crisp SVG icons.
 
-## Decisions Made
+## How to run my code locally
 
-- **Vanilla Technology Stack**: Chosen HTML5, CSS3, and regular JavaScript without a framework like React or Vue. This keeps the project lightweight, eliminates dependencies, and makes the application blazing fast.
-- **Light Blue Aesthetic**: Implemented a modern design with clean, flat colors and smooth corners to create a premium feel while utilizing a straightforward, semantic CSS structure.
-- **Accessibility & Testing Best Practices**:
-  - `data-testid` attributes are utilized on crucial layout elements to allow for E2E automated frameworks (like Cypress or Playwright) to hook into the UI effortlessly.
-  - Form validation with `required` tags and basic semantic HTML ensures functional usability.
-- **Time Remaining Calculation**: Using a `setInterval` loop to check the due date against the current time every minute to update the "remaining time" counter dynamically without freezing the main thread.
+It's super simple to review my work since I built it natively without any node modules, framework compilers, or package managers!
 
-## Any Trade-offs
+**The easiest way:**
+1. Just download or clone this repository to your computer.
+2. Open the `todo-item-card` folder.
+3. Double-click the `index.html` file and it will open right up in your default web browser!
 
-- **Framework Agnostic vs State Management**: By using Vanilla JS, DOM manipulation and state management (like adding, editing, or deleting a todo) are tightly coupled. In a larger application with many interconnected components, this would become difficult to maintain, making a framework like React or Svelte heavily preferred.
-- **Data Persistence**: Currently, todos are dynamically appended to the DOM for immediate user feedback. However, since a database or `localStorage` implementation isn't actively persisting them, refreshing the browser clears newly added tasks. Persistence was omitted to focus purely on the core frontend UI requirements of the isolated card state.
-- **CSS Variable Consolidation**: For the sake of making the CSS very approachable, explicit, and easy to maintain by developers of all skill levels, advanced layout mechanisms (like deep element masking) and heavy CSS variables were traded for hard-coded hex colors and simpler layouts. This is less scalable for a massive design system but vastly easier to edit without breaking side-effects.
+**If you use VS Code:**
+1. Open the project folder in VS Code.
+2. Make sure you have the "Live Server" extension installed.
+3. Right-click on `index.html` and hit **"Open with Live Server"**. It'll open up in your browser and update live if you want to play around with the code!
+
+---
+*Built with ❤️ by Favour Damain*
